@@ -1,0 +1,98 @@
+
+%{
+#include <iostream>
+#include "scanner.h"
+#include "mathtree.h"
+extern Tree *mathtree;
+
+void yyerror(const char *s)
+{
+    printf("Oops! %s\n", s);
+}
+
+%}
+
+%union {
+    void *t;
+    char *op;
+    double val;
+    char var;
+}
+
+%token LEFT_PAREN RIGHT_PAREN
+%token <op> PLUS MINUS TIMES DIVIDE CARET FUNC
+%token <val> NUMBER
+%token <var> XVAR
+
+%type <t> expression primary term
+
+%start calculation
+
+%%
+
+calculation
+: expression { mathtree = (Tree*)$1; }
+;
+
+expression
+: term
+| expression PLUS term
+{
+    $$ = new Tree($2, (Tree*)$1, (Tree*)$3);
+    free($2);
+}
+| expression MINUS term
+{
+    $$ = new Tree($2, (Tree*)$1, (Tree*)$3);
+    free($2);
+}
+| PLUS term
+{
+    $$ = $2;
+}
+| MINUS term
+{
+    $$ = new Tree("-", new Tree(0.0), (Tree*)$2);
+}
+;
+
+term
+: primary
+| term TIMES primary
+{
+    $$ = new Tree($2, (Tree*)$1, (Tree*)$3);
+    free($2);
+}
+| term DIVIDE primary
+{
+    $$ = new Tree($2, (Tree*)$1, (Tree*)$3);
+    free($2);
+}
+| term CARET primary
+{
+    $$ = new Tree($2, (Tree*)$1, (Tree*)$3);
+    free($2);
+}
+;
+
+primary
+: NUMBER
+{
+    $$ = new Tree($1);
+}
+| XVAR
+{
+    $$ = new Tree($1);
+}
+| FUNC LEFT_PAREN expression RIGHT_PAREN
+{
+    $$ = new Tree($1, (Tree*)$3, NULL);
+    free($1);
+}
+| LEFT_PAREN expression RIGHT_PAREN
+{
+    $$ = $2;
+}
+;
+
+%%
