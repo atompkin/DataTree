@@ -105,27 +105,27 @@ struct Tree *Tree::simplify_rec()
     // TODO
 	if(is_binary_op())
 	{
-		if(left -> is_var() && left->val == 1.0 && op  == "*")
-		{
-			return right -> simplify();
-		}
-		if(right -> is_var() && right->val == 1.0 && op == "*")
+		if(right->val == 1.0 && op  == "*")
 		{
 			return left -> simplify();
 		}
-		if(left -> is_val() && left->val == 0.0 && op == "*")
-		{
-			return new Tree(0.0);
-		}
-		if(right -> is_val() && right->val == 0.0 && op == "*")
-		{
-			return new Tree(0.0);
-		}
-		if(left -> is_val() && left->val == 0.0 && op == "+")
+		if(left->val == 1.0 && op == "*")
 		{
 			return right -> simplify();
 		}
-		if(right -> is_val() && right->val == 0.0 && op == "+")
+		if(left->val == 0.0 && op == "*")
+		{
+			return new Tree(0.0);
+		}
+		if(right->val == 0.0 && op == "*")
+		{
+			return new Tree(0.0);
+		}
+		if(left->val == 0.0 && op == "+")
+		{
+			return right -> simplify();
+		}
+		if(right->val == 0.0 && op == "+")
 		{
 			return left -> simplify();
 		}
