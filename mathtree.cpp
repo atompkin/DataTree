@@ -103,12 +103,8 @@ struct Tree *Tree::clone()
 struct Tree *Tree::simplify_rec()
 {
     // TODO
-	if(is_binary_op())
+	if(is_binary_op() && left->is_val())
 	{
-		if(right->val == 1.0 && op  == "*")
-		{
-			return left -> simplify();
-		}
 		if(left->val == 1.0 && op == "*")
 		{
 			return right -> simplify();
@@ -117,18 +113,27 @@ struct Tree *Tree::simplify_rec()
 		{
 			return new Tree(0.0);
 		}
-		if(right->val == 0.0 && op == "*")
-		{
-			return new Tree(0.0);
-		}
 		if(left->val == 0.0 && op == "+")
 		{
 			return right -> simplify();
+		}
+	}
+	if(is_binary_op() && right->is_val())
+	{
+		if(right->val == 1.0 && op =="*")
+		{
+			return left -> simplify();
+		}
+		if(right->val == 0.0 && op =="*")
+		{
+			return new Tree(0.0);
 		}
 		if(right->val == 0.0 && op == "+")
 		{
 			return left -> simplify();
 		}
+
+
 	}
 	if(is_unary_op())
 	{
