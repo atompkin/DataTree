@@ -144,7 +144,6 @@ struct Tree *Tree::simplify_rec()
 		{
 			return new Tree(log(left->val));
 		}
-		return new Tree(op, left->simplify(), NULL);
 	}
 	if(is_binary_op())
 	{
@@ -168,8 +167,9 @@ struct Tree *Tree::simplify_rec()
 		{
 			return new Tree(pow(left->val,right->val));
 		}
-		return new Tree(op, left->simplify(), right->simplify());
 	}
+    if(is_binary_op()) return new Tree(op, left->simplify(), right->simplify());
+    if(is_unary_op()) return new Tree(op, left->simplify(), NULL);
     return clone();
 }
 
@@ -226,7 +226,7 @@ struct Tree *Tree::derive()
     }
     if(op == "/")
     {
-	    return new Tree("/",new Tree("-",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive())),new Tree("^",left->derive(),new Tree(2.0)));
+	    return new Tree("/",new Tree("-",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive())),new Tree("^",right->clone(),new Tree(2.0)));
     }
     if(op == "^")
     {
@@ -243,22 +243,22 @@ void Tree::print_inorder()
 	    left->print_inorder();
 	    cout << ")";
     }
-    if(op== "-" && left->val == 0.0 && left->op == "")
+    else if(op== "-" && left->val == 0.0 && left->op == "")
     {
 	    cout << "-";
-	    right -> print_inorder();
+	    right->print_inorder();
     }
-    if(is_var())
+    else if(is_var())
     {
-	    cout<< var;
+	    cout << var;
     }
-    if(is_val())
+    else if(is_val())
     {
-	    cout<< val;
+	    cout << val;
     }
-    if(is_binary_op())
+    else if(is_binary_op())
     {
-	    cout<< "(";
+	    cout << "(";
 	    left->print_inorder();
 	    cout << op;
 	    right->print_inorder();
