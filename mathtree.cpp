@@ -62,21 +62,15 @@ bool Tree::is_binary_op()
 void delete_tree(struct Tree *root)
 {
     // TODO
-        if(root -> is_var)
+    if(root->left != NULL) 
     {
-        delete [] root;
+	delete_tree(root->left);	
     }
-    else
+    if(root->right != NULL)
     {
-        while(left != NULL)
-        {
-            delete_tree(left);
-        }
-        while(right != NULL)
-        {
-            delete_tree(right);
-        }
+	delete_tree(root->right);	    	
     }
+    delete root;
 }
 
 bool Tree::equals(struct Tree *other)
@@ -108,8 +102,34 @@ struct Tree *Tree::clone()
 
 struct Tree *Tree::simplify_rec()
 {
-    // TODe
-
+    // TODO
+	if(is_binary_op())
+	{
+		if(left -> is_var() && left->val == 1.0 && op  == "*")
+		{
+			return (this -> right -> simplify());
+		}
+		if(right -> is_var() && right->val == 1.0 && op == "*")
+		{
+			return (this -> left -> simplify());
+		}
+		if(left -> is_val() && left->val == 0.0 && op == "*")
+		{
+			return 0;
+		}
+		if(right -> is_val() && right->val == 0.0 && op == "*")
+		{
+			return 0;
+		}
+		if(left -> is_val() && left->val == 0.0 && op == "+")
+		{
+			return (this -> right -> simplify());
+		}
+		if(right -> is_val() && right->val == 0.0 && op == "+")
+		{
+			return (this -> left -> simplify());
+		}
+	}
     return clone();
 }
 
@@ -132,7 +152,38 @@ struct Tree *Tree::simplify()
 struct Tree *Tree::derive()
 {
     // TODO
-
+    if(is_var())
+    {
+	    return new Tree(1.0);
+    }
+    if(is_val())
+    {
+	    return new Tree(0.0);
+    }
+    if(op == "sin")
+    {
+	    return new Tree("*",new Tree("cos", left->clone(), NULL),left->derive());
+    }
+    if(op == "+")
+    {
+	    return new Tree("+",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
+    }
+    if(op == "-")
+    {
+	    return new Tree("-",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
+    }
+    if(op == "*")
+    {
+	    return new Tree("*",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
+    }
+    if(op == "/")
+    {
+	    return new Tree("/",new Tree("-",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive())),new Tree("^",left->derive(),new Tree(2.0)));
+    }
+    if(op == "^")
+    {
+	    return new Tree("*",new Tree("^",left->clone(),right->clone()),new Tree("+",new Tree("*", left->derive(),new Tree("/",right->clone(),left->clone())),new Tree("*",right->derive(),new Tree("ln",left->clone(),NULL))));
+    }
     return clone();
 }
 

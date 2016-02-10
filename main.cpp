@@ -31,7 +31,7 @@ int main()
             struct Tree *simplified = mathtree->simplify();
             cout << "Simplified tree:" << endl;
             print_ascii_tree(simplified);
-            cout << "Printed in pre-order:" << endl;
+            cout << "Printed in order:" << endl;
             simplified->print_inorder();
             cout << endl << endl << endl;
             struct Tree *derived = mathtree->derive();
