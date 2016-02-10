@@ -227,7 +227,7 @@ struct Tree *Tree::derive()
     }
     if(op == "*")
     {
-	    return new Tree("*",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
+	    return new Tree("+",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
     }
     if(op == "/")
     {
