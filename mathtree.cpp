@@ -206,7 +206,7 @@ struct Tree *Tree::derive()
     }
     if(op == "cos")
     {
-	    return new Tree("-",new Tree(0.0),new Tree("*",new Tree("cos",left->clone(),NULL),left->derive()));
+	    return new Tree("-",new Tree(0.0),new Tree("*",new Tree("sin",left->clone(),NULL),left->derive()));
     }
     if(op == "ln")
     {
@@ -214,11 +214,11 @@ struct Tree *Tree::derive()
     }
     if(op == "+")
     {
-	    return new Tree("+",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
+	    return new Tree("+",left->derive(),right->derive());
     }
     if(op == "-")
     {
-	    return new Tree("-",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
+	    return new Tree("-",left->derive(),right->derive());
     }
     if(op == "*")
     {
