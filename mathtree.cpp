@@ -144,29 +144,31 @@ struct Tree *Tree::simplify_rec()
 		{
 			return new Tree(log(left->val));
 		}
+		return new Tree(op, left->simplify(), NULL);
 	}
 	if(is_binary_op())
 	{
 		if(op == "+" && left->is_val() && right->is_val())
 		{
-			return new Tree("+",left->simplify(),right->simplify());
+			return new Tree(left->val + right->val);
 		}
 		if(op == "-" && left->is_val() && right->is_val())
 		{
-			return new Tree("-",left->simplify(),right->simplify());
+			return new Tree(left->val - right->val);
 		}
 		if(op == "*" && left->is_val() && right->is_val())
 		{
-			return new Tree("*",left->simplify(),right->simplify());
+			return new Tree(left->val * right->val);
 		}
 		if(op == "/" && left->is_val() && right->is_val())
 		{
-			return new Tree("/",left->simplify(),right->simplify());
+			return new Tree(left->val / right->val);
 		}
 		if(op == "^" && left->is_val() && right->is_val())
 		{
-			return new Tree("^",left->simplify(),right->simplify());
+			return new Tree(pow(left->val,right->val));
 		}
+		return new Tree(op, left->simplify(), right->simplify());
 	}
     return clone();
 }
