@@ -130,6 +130,44 @@ struct Tree *Tree::simplify_rec()
 			return (this -> left -> simplify());
 		}
 	}
+	if(is_unary_op())
+	{
+		if(op == "sin" && left->is_val())
+		{
+			return new Tree(sin(left->val));
+		}
+		if(op == "cos" && left->is_val())
+		{
+			return new Tree(cos(left->val));
+		}
+		if(op == "ln" && left-> is_val())
+		{
+			return new Tree(log(left->val));
+		}
+	}
+	if(is_binary_op())
+	{
+		if(op == "+" && left->is_val() && right->is_val())
+		{
+			return new Tree("+",left->simplify(),right->simplify());
+		}
+		if(op == "-" && left->is_val() && right->is_val())
+		{
+			return new Tree("-",left->simplify(),right->simplify());
+		}
+		if(op == "*" && left->is_val() && right->is_val())
+		{
+			return new Tree("*",left->simplify(),right->simplify());
+		}
+		if(op == "/" && left->is_val() && right->is_val())
+		{
+			return new Tree("/",left->simplify(),right->simplify());
+		}
+		if(op == "^" && left->is_val() && right->is_val())
+		{
+			return new Tree("^",left->simplify(),right->simplify());
+		}
+	}
     return clone();
 }
 
@@ -164,6 +202,14 @@ struct Tree *Tree::derive()
     {
 	    return new Tree("*",new Tree("cos", left->clone(), NULL),left->derive());
     }
+    if(op == "cos")
+    {
+	    return new Tree("-",new Tree(0.0),new Tree("*",new Tree("cos",left->clone(),NULL),left->derive()));
+    }
+    if(op == "ln")
+    {
+	    return new Tree("*",new Tree("/",new Tree(1.0),left->clone()),left->derive());
+    }
     if(op == "+")
     {
 	    return new Tree("+",new Tree("*",left->derive(),right->clone()),new Tree("*",left->clone(),right->derive()));
@@ -189,6 +235,33 @@ struct Tree *Tree::derive()
 
 void Tree::print_inorder()
 {
-    // TODO
+    if(is_unary_op())
+    {
+	    cout << op << "(";
+	    left->print_inorder();
+	    cout << ")";
+    }
+    if(op== "-" && left->val == 0.0 && left->op == "")
+    {
+	    cout << "-";
+	    right -> print_inorder();
+    }
+    if(is_var())
+    {
+	    cout<< var;
+    }
+    if(is_val())
+    {
+	    cout<< val;
+    }
+    if(is_binary_op())
+    {
+	    cout<< "(";
+	    left->print_inorder();
+	    cout << op;
+	    right->print_inorder();
+	    cout << ")";
+    }
+
 }
 
